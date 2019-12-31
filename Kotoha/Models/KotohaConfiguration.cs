@@ -34,7 +34,7 @@ namespace Kotoha.Models
                 throw new ArgumentException("'name' attribute should not be null or white space.");
             }
 
-            var rawBoost = XmlUtil.GetAttribute("", node, ignoreCase: true);
+            var rawBoost = XmlUtil.GetAttribute("boost", node, ignoreCase: true);
             if (!int.TryParse(rawBoost, out var boost) || boost < 0)
             {
                 throw new ArgumentException("'boost' attribute should be a positive integer.");
