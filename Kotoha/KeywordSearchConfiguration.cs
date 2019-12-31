@@ -20,7 +20,7 @@ namespace Kotoha
             Assert.IsNotNullOrEmpty(fieldNamePrefix, $"'{nameof(fieldNamePrefix)}' should not be null or empty.");
 
             _fieldNamePrefix = fieldNamePrefix;
-            ContentField = new ConcatenatedField($"{fieldNamePrefix}_content", 0);
+            ContentField = new ConcatenatedField($"{fieldNamePrefix}_c", 0);
             BoostedFields = new List<ConcatenatedField>();
         }
 
@@ -46,14 +46,15 @@ namespace Kotoha
                 return;
             }
 
-            var field = BoostedFields.FirstOrDefault(g => g.Boost == boost);
+            var fieldName = $"{_fieldNamePrefix}_{boost}";
+            var field = BoostedFields.FirstOrDefault(f => f.Name == fieldName);
             if (field != null)
             {
                 field.Fields.Add(name);
                 return;
             }
 
-            var newField = new ConcatenatedField($"{_fieldNamePrefix}_{boost}", boost);
+            var newField = new ConcatenatedField(fieldName, boost);
             newField.Fields.Add(name);
             BoostedFields.Add(newField);
         }
@@ -63,11 +64,11 @@ namespace Kotoha
     {
         public string Name { get; set; }
 
-        public int Boost { get; set; }
+        public float Boost { get; set; }
 
         public ICollection<string> Fields { get; set; }
 
-        public ConcatenatedField(string fieldName, int boost)
+        public ConcatenatedField(string fieldName, float boost)
         {
             Name = fieldName;
             Boost = boost;

@@ -3,7 +3,7 @@
   <sitecore role:require="Standalone or ContentManagement or ContentDelivery" >
     <kotoha>
       <KeywordSearchConfiguration type="Kotoha.KeywordSearchConfiguration, Kotoha">
-        <param name="fieldNamePrefix">_kotoha</param>
+        <param name="fieldNamePrefix">_ks</param>
         <targetFields hint="raw:AddTargetField">
           <field name="Title" boost="10" />
           <field name="Description" boost="5" />
