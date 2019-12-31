@@ -1,4 +1,5 @@
-using Kotoha.Models;
+using Kotoha.Configs;
+using Kotoha.ContentSearch;
 using Sitecore.Configuration;
 using Sitecore.ContentSearch;
 using Sitecore.ContentSearch.SolrProvider;
@@ -10,7 +11,7 @@ namespace Kotoha.DocumentBuilders
 {
     public class KotohaSolrDocumentBuilder : SolrDocumentBuilder
     {
-        private readonly KotohaConfiguration _configuration = Factory.CreateObject("kotoha/KotohaConfiguration", true) as KotohaConfiguration;
+        private readonly KeywordSearchConfiguration _config = Factory.CreateObject("kotoha/KeywordSearchConfiguration", true) as KeywordSearchConfiguration;
 
         public KotohaSolrDocumentBuilder(IIndexable indexable, IProviderUpdateContext context) : base(indexable, context)
         {
@@ -25,27 +26,20 @@ namespace Kotoha.DocumentBuilders
                 return fields;
             }
 
-            var contentField = CreateContentField(indexableItem.Item);
-            var boostedFields = _configuration.TargetFieldGroups
-                .Select(fieldGroup => CreateBoostedField(indexableItem.Item, fieldGroup))
+            var contentField = CreateKeywordSearchField(indexableItem.Item, _config.ContentField);
+            var boostedFields = _config.BoostedFields
+                .Select(concatedField => CreateKeywordSearchField(indexableItem.Item, concatedField))
                 .ToList();
 
             return fields.Concat(boostedFields).Append(contentField);
         }
 
-        private IIndexableDataField CreateBoostedField(Item item, FieldGroup fieldGroup)
+        private IIndexableDataField CreateKeywordSearchField(Item item, ConcatenatedField concatedField)
         {
-            var value = string.Join(" ", fieldGroup.Fields.Select(field => item[field]));
+            var values = concatedField.Fields.Select(field => item[field]).Where(value => !string.IsNullOrEmpty(value));
+            var concatedValue = string.Join(" ", values);
 
-            return new KotohaDataField(fieldGroup.Name, value);
-        }
-
-        private IIndexableDataField CreateContentField(Item item)
-        {
-            var fields = _configuration.TargetFieldGroups.SelectMany(fieldGroup => fieldGroup.Fields);
-            var value = string.Join(" ", fields.Select(field => item[field]));
-
-            return new KotohaDataField(_configuration.ContentFieldName, value);
+            return new KeywordSearchField(concatedField.Name, concatedValue);
         }
     }
 }

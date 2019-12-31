@@ -68,15 +68,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configs\KeywordSearchConfiguration.cs" />
     <Compile Include="DocumentBuilders\KotohaSolrDocumentBuilder.cs" />
-    <Compile Include="Models\KotohaConfiguration.cs" />
-    <Compile Include="Models\KotohaDataField.cs" />
+    <Compile Include="ContentSearch\KeywordSearchField.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\KotohaQueryService.cs" />
+    <Compile Include="Services\KeywordSearchQueryService.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App_Config\Include\Kotoha\Kotoha.DocumentBuilder.Solr.config" />
-    <None Include="App_Config\Include\Kotoha\Kotoha.KotohaConfiguration.config.example" />
+    <None Include="App_Config\Include\Kotoha\Kotoha.config" />
+    <None Include="App_Config\Include\Kotoha\Kotoha.KeywordSearchConfiguration.config.example" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
