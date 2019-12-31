@@ -1,5 +1,3 @@
-using Kotoha.Configs;
-using Kotoha.ContentSearch;
 using Sitecore.Configuration;
 using Sitecore.ContentSearch;
 using Sitecore.ContentSearch.SolrProvider;
@@ -7,7 +5,7 @@ using Sitecore.Data.Items;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Kotoha.DocumentBuilders
+namespace Kotoha
 {
     public class KotohaSolrDocumentBuilder : SolrDocumentBuilder
     {

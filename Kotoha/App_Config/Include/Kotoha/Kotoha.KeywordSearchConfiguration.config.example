@@ -2,7 +2,7 @@
 <configuration xmlns:role="http://www.sitecore.net/xmlconfig/role/">
   <sitecore role:require="Standalone or ContentManagement or ContentDelivery" >
     <kotoha>
-      <KeywordSearchConfiguration type="Kotoha.Configs.KeywordSearchConfiguration, Kotoha">
+      <KeywordSearchConfiguration type="Kotoha.KeywordSearchConfiguration, Kotoha">
         <param name="fieldNamePrefix">_kotoha</param>
         <targetFields hint="raw:AddTargetField">
           <field name="Title" boost="10" />

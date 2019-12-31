@@ -2,7 +2,7 @@ using Sitecore.ContentSearch;
 using Sitecore.Diagnostics;
 using System;
 
-namespace Kotoha.ContentSearch
+namespace Kotoha
 {
     public class KeywordSearchField : IIndexableDataField
     {

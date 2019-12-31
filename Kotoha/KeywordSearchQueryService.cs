@@ -1,4 +1,3 @@
-using Kotoha.Configs;
 using Sitecore.Configuration;
 using Sitecore.ContentSearch.Linq;
 using Sitecore.ContentSearch.Linq.Utilities;
@@ -7,7 +6,7 @@ using Sitecore.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Kotoha.Services
+namespace Kotoha
 {
     public interface IKeywordSearchQueryService
     {
