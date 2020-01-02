@@ -71,8 +71,8 @@
     <Compile Include="KeywordSearchQueryService.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App_Config\Include\Kotoha\Kotoha.config" />
-    <None Include="App_Config\Include\Kotoha\Kotoha.KeywordSearchConfiguration.config.example" />
+    <Content Include="App_Config\Include\Kotoha\Kotoha.config" />
+    <Content Include="App_Config\Include\Kotoha\Kotoha.KeywordSearchConfiguration.config.example" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
