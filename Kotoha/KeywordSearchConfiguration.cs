@@ -2,26 +2,20 @@ using Sitecore.Diagnostics;
 using Sitecore.Xml;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Xml;
 
 namespace Kotoha
 {
     public class KeywordSearchConfiguration
     {
-        private readonly string _fieldNamePrefix;
+        public string ContentFieldName { get; set; }
 
-        public ConcatenatedField ContentField { get; }
+        public ICollection<TargetField> TargetFields { get; }
 
-        public ICollection<ConcatenatedField> BoostedFields { get; }
-
-        public KeywordSearchConfiguration(string fieldNamePrefix)
+        public KeywordSearchConfiguration(string contentFieldName)
         {
-            Assert.IsNotNullOrEmpty(fieldNamePrefix, $"'{nameof(fieldNamePrefix)}' should not be null or empty.");
-
-            _fieldNamePrefix = fieldNamePrefix;
-            ContentField = new ConcatenatedField($"{fieldNamePrefix}_c", 0);
-            BoostedFields = new List<ConcatenatedField>();
+            ContentFieldName = contentFieldName;
+            TargetFields = new List<TargetField>();
         }
 
         public void AddTargetField(XmlNode node)
@@ -31,48 +25,35 @@ namespace Kotoha
             var name = XmlUtil.GetAttribute("name", node);
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException("'name' attribute should not be null or white space.");
+                throw new InvalidOperationException("'name' attribute should not be null or white space.");
             }
 
-            ContentField.Fields.Add(name);
-
-            if (!int.TryParse(XmlUtil.GetAttribute("boost", node), out var boost))
+            var rawBoost = XmlUtil.GetAttribute("boost", node);
+            if (string.IsNullOrEmpty(rawBoost))
             {
-                throw new ArgumentException("'boost' attribute should be an integer.");
-            }
-
-            if (boost <= 0)
-            {
+                TargetFields.Add(new TargetField(name, 0.0f));
                 return;
             }
 
-            var fieldName = $"{_fieldNamePrefix}_{boost}";
-            var field = BoostedFields.FirstOrDefault(f => f.Name == fieldName);
-            if (field != null)
+            if (!float.TryParse(rawBoost, out var boost))
             {
-                field.Fields.Add(name);
-                return;
+                throw new InvalidOperationException("'boost' attribute should be a positive float number.");
             }
 
-            var newField = new ConcatenatedField(fieldName, boost);
-            newField.Fields.Add(name);
-            BoostedFields.Add(newField);
+            TargetFields.Add(new TargetField(name, boost));
         }
     }
 
-    public class ConcatenatedField
+    public class TargetField
     {
-        public string Name { get; set; }
+        public string Name { get; }
 
-        public float Boost { get; set; }
+        public float Boost { get; }
 
-        public ICollection<string> Fields { get; set; }
-
-        public ConcatenatedField(string fieldName, float boost)
+        public TargetField(string fieldName, float boost)
         {
             Name = fieldName;
             Boost = boost;
-            Fields = new HashSet<string>();
         }
     }
 }

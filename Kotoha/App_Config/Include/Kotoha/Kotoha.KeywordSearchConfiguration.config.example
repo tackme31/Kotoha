@@ -3,17 +3,17 @@
   <sitecore role:require="Standalone or ContentManagement or ContentDelivery" >
     <kotoha>
       <KeywordSearchConfiguration type="Kotoha.KeywordSearchConfiguration, Kotoha">
-        <param name="fieldNamePrefix">_ks</param>
+        <param name="contentFieldName">kscontent</param>
         <targetFields hint="raw:AddTargetField">
-          <field name="Title" boost="10" />
-          <field name="Description" boost="5" />
-          <field name="Tags" boost="5" />
-          <field name="Body" boost="2" />
-          <field name="Category" boost="2" />
-          <field name="Author" boost="2" />
-          <field name="Html Title" boost="0" />
-          <field name="Meta Description" boost="0" />
-          <field name="Meta Keywords" boost="0" />
+          <field name="Title"           boost="9" />
+          <field name="Description"     boost="5" />
+          <field name="Tags"            boost="4" />
+          <field name="Body"            boost="4" />
+          <field name="Category"        boost="2" />
+          <field name="Author"          boost="2" />
+          <field name="Html Title"                />
+          <field name="Meta Description"          />
+          <field name="Meta Keywords"             />
         </targetFields>
       </KeywordSearchConfiguration>
     </kotoha>

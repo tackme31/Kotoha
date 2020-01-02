@@ -1,10 +1,10 @@
 # Kotoha
 *Kotoha* is a Sitecore module for generating an efficient query of a keyword search that supports field-level boosting.  
 
-**This library is in early stage of development.**
+**This software is in early stage of development.**
 
 ## Prerequisites
-WIP
+- Sitecore XM 9.0 or later
 
 ## Installation
 WIP
