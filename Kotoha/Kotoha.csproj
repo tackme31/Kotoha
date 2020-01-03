@@ -68,11 +68,10 @@
     <Compile Include="KeywordSearchConfiguration.cs" />
     <Compile Include="KeywordSearchContentIndexField.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="KeywordSearchQueryService.cs" />
+    <Compile Include="KeywordSearchQueryGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Config\Include\Kotoha\Kotoha.config" />
-    <Content Include="App_Config\Include\Kotoha\Kotoha.KeywordSearchConfiguration.config.example" />
+    <Content Include="App_Config\Include\Kotoha\Kotoha.config.example" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />

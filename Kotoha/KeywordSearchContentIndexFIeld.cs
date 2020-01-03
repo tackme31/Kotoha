@@ -1,13 +1,26 @@
 using Sitecore.Configuration;
 using Sitecore.ContentSearch;
 using Sitecore.ContentSearch.ComputedFields;
+using Sitecore.Xml;
 using System.Linq;
+using System.Xml;
 
 namespace Kotoha
 {
-    public class KeywordSearchContentIndexField : AbstractComputedIndexField
+    public class KeywordSearchContentIndexField : IComputedIndexField
     {
-        public override object ComputeFieldValue(IIndexable indexable)
+        public string FieldName { get; set; }
+        public string ReturnType { get; set; }
+        public string SearchTargetId { get; }
+
+        public KeywordSearchContentIndexField(XmlNode configNode)
+        {
+            FieldName = XmlUtil.GetAttribute("fieldName", configNode);
+            ReturnType = XmlUtil.GetAttribute("returnType", configNode);
+            SearchTargetId = XmlUtil.GetAttribute("searchTargetId", configNode);
+        }
+
+        public object ComputeFieldValue(IIndexable indexable)
         {
             if (!(indexable is SitecoreIndexableItem indexableItem))
             {
@@ -20,13 +33,19 @@ namespace Kotoha
                 return null;
             }
 
-            var config = Factory.CreateObject("kotoha/KeywordSearchConfiguration", false) as KeywordSearchConfiguration;
+            var config = Factory.CreateObject("kotoha/configuration", false) as KeywordSearchConfiguration;
             if (config == null)
             {
                 return null;
             }
 
-            var fieldValues = config.TargetFields
+            var searchTarget = config.GetSearchTargetById(SearchTargetId);
+            if (searchTarget == null)
+            {
+                return null;
+            }
+
+            var fieldValues = searchTarget.Fields
                 .Select(field => indexable.GetFieldByName(field.Name))
                 .Where(field => field != null)
                 .Select(field => index.Configuration.FieldReaders.GetFieldValue(field));
