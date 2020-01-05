@@ -36,7 +36,7 @@ namespace Kotoha
             var matchPred = keywords
                 .Aggregate(
                     PredicateBuilder.True<T>(),
-                    (acc, keyword) => acc.Or(item => item[contentField.FieldName].Contains(keyword)));
+                    (acc, keyword) => acc.And(item => item[contentField.FieldName].Contains(keyword)));
 
             var boostPred = searchTarget.Fields
                 .Where(field => field.Boost > 0.0f)
