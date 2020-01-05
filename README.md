@@ -93,9 +93,10 @@ public SearchResults<SearchResultItem> SearchBlogByKeywords(string[] keywords)
 
 5. In Sitecore, populate solr managed schema and rebuild all indexes.
 
-6. Test your search code works well.
+6. Check your search code works well.
 
 ## See also
+- [Search result boosting](https://doc.sitecore.com/developers/93/platform-administration-and-architecture/en/search-result-boosting.html)
 - [Implementing keyword search with field-level boosting in Sitecore](https://dev.to/xirtardauq/implementing-a-keyword-search-with-field-level-boosting-in-sitecore-99g)
 
 ## Author
