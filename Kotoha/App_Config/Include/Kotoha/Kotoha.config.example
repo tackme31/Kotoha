@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <configuration xmlns:role="http://www.sitecore.net/xmlconfig/role/" xmlns:search="http://www.sitecore.net/xmlconfig/search/">
-  <sitecore role:require="Standalone or ContentManagement or ContentDelivery">
+  <sitecore role:require="Standalone or ContentManagement or ContentDelivery" search:require="solr">
     <kotoha>
       <configuration type="Kotoha.KeywordSearchConfiguration, Kotoha">
         <searchTargets hint="list:AddSearchTarget">
@@ -29,28 +29,14 @@
       </configuration>
     </kotoha>
     <contentSearch>
-      <configuration type="Sitecore.ContentSearch.ContentSearchConfiguration, Sitecore.ContentSearch">
-        <indexes search:require="solr">
-          <index id="sitecore_master_index" type="Sitecore.ContentSearch.SolrProvider.SolrSearchIndex, Sitecore.ContentSearch.SolrProvider">
-            <configuration ref="contentSearch/indexConfigurations/defaultSolrIndexConfiguration">
-              <documentOptions ref="contentSearch/indexConfigurations/defaultSolrIndexConfiguration/documentOptions">
-                <fields hint="raw:AddComputedIndexField">
-                  <field fieldName="ks_blog" returnType="text" searchTargetId="blog">Kotoha.KeywordSearchContentIndexField, Kotoha</field>
-                </fields>
-              </documentOptions>
-            </configuration>
-          </index>
-          <index id="sitecore_web_index" type="Sitecore.ContentSearch.SolrProvider.SolrSearchIndex, Sitecore.ContentSearch.SolrProvider">
-            <configuration ref="contentSearch/indexConfigurations/defaultSolrIndexConfiguration">
-              <documentOptions ref="contentSearch/indexConfigurations/defaultSolrIndexConfiguration/documentOptions">
-                <fields hint="raw:AddComputedIndexField">
-                  <field fieldName="ks_blog" returnType="text" searchTargetId="blog">Kotoha.KeywordSearchContentIndexField, Kotoha</field>
-                </fields>
-              </documentOptions>
-            </configuration>
-          </index>
-        </indexes>
-      </configuration>
+      <indexConfigurations>
+        <defaultSolrIndexConfiguration>
+          <fields hint="raw:AddComputedIndexField">
+            <!-- You can use your own field name. Set the search target's ID to the 'searchTargetId' attribute instead. -->
+            <field fieldName="ks_blog" returnType="text" searchTargetId="blog">Kotoha.KeywordSearchContentIndexField, Kotoha</field>
+          </fields>
+        </defaultSolrIndexConfiguration>
+      </indexConfigurations>
     </contentSearch>
   </sitecore>
 </configuration>
