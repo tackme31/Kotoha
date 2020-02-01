@@ -40,6 +40,7 @@ namespace Kotoha
 
             var boostPred = searchTarget.Fields
                 .Where(field => field.Boost > 0.0f)
+                .Append(new KeywordSearchTarget.TargetField(contentField.FieldName, 0))
                 .SelectMany(_ => keywords, (field, keyword) => (field, keyword))
                 .Aggregate(
                     PredicateBuilder.False<T>(),
