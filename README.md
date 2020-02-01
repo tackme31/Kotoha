@@ -56,10 +56,12 @@ You can see a sample configuration in [Kotoha.config.example](./Kotoha/App_Confi
     <contentSearch>
       <indexConfigurations>
         <defaultSolrIndexConfiguration>
-          <fields hint="raw:AddComputedIndexField">
-            <!-- You can use your own field name. Set the search target's ID to the 'searchTargetId' attribute instead. -->
-            <field fieldName="ks_blog" returnType="text" searchTargetId="blog">Kotoha.KeywordSearchContentIndexField, Kotoha</field>
-          </fields>
+          <documentOptions>
+            <fields hint="raw:AddComputedIndexField">
+              <!-- You can use your own field name. Set the search target's ID to the 'searchTargetId' attribute instead. -->
+              <field fieldName="ks_blog" returnType="text" searchTargetId="blog">Kotoha.KeywordSearchContentIndexField, Kotoha</field>
+            </fields>
+          </documentOptions>
         </defaultSolrIndexConfiguration>
       </indexConfigurations>
     </contentSearch>
