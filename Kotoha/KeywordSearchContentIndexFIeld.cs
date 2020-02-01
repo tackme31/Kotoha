@@ -48,7 +48,8 @@ namespace Kotoha
             var fieldValues = searchTarget.Fields
                 .Select(field => indexable.GetFieldByName(field.Name))
                 .Where(field => field != null)
-                .Select(field => index.Configuration.FieldReaders.GetFieldValue(field));
+                .Select(field => index.Configuration.FieldReaders.GetFieldValue(field)?.ToString())
+                .Where(value => !string.IsNullOrWhiteSpace(value));
 
             return string.Join(" ", fieldValues);
         }
