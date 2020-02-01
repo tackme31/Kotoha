@@ -1,7 +1,10 @@
 # Kotoha
-*Kotoha* is a Sitecore module for generating an efficient query of a keyword search that supports field-level boosting.  
+*Kotoha* is a Sitecore library for generating an efficient query of keyword search that supports field-level boosting.  
 
 **This software is in early stage of development.**
+
+## Prerequisites
+- Sitecore XM/XP 9.3 with Solr
 
 ## Installation
 *Kotoha* is not available in NuGet Gallery yet. Download `.nupkg` file from [here](https://github.com/xirtardauq/Kotoha/releases) and install it locally.  
@@ -12,8 +15,8 @@ You can see a sample configuration in [Kotoha.config.example](./Kotoha/App_Confi
 1. Add a configuration for a keyword search target.
 
 ```xml
-<configuration>
-  <sitecore>
+<configuration xmlns:search="http://www.sitecore.net/xmlconfig/search/">
+  <sitecore search:require="solr">
     <kotoha>
       <configuration type="Kotoha.KeywordSearchConfiguration, Kotoha">
         <searchTargets hint="list:AddSearchTarget">
@@ -48,24 +51,17 @@ You can see a sample configuration in [Kotoha.config.example](./Kotoha/App_Confi
 2. Add a computed field for the search target and set the `searchTargetId` which points to your search target.
 
 ```xml
-<configuration>
-  <sitecore>
+<configuration xmlns:search="http://www.sitecore.net/xmlconfig/search/">
+  <sitecore search:require="solr">
     <contentSearch>
-      <configuration type="Sitecore.ContentSearch.ContentSearchConfiguration, Sitecore.ContentSearch">
-        <indexes search:require="solr">
-          <!-- Of course, this should be set to the sitecore_web_index index. -->
-          <index id="sitecore_master_index" type="Sitecore.ContentSearch.SolrProvider.SolrSearchIndex, Sitecore.ContentSearch.SolrProvider">
-            <configuration ref="contentSearch/indexConfigurations/defaultSolrIndexConfiguration">
-              <documentOptions ref="contentSearch/indexConfigurations/defaultSolrIndexConfiguration/documentOptions">
-                <fields hint="raw:AddComputedIndexField">
-                  <!-- The 'searchTargetId' attribute must be set the search target's ID that configures in the previous step. -->
-                  <field fieldName="ks_blog" returnType="text" searchTargetId="blog">Kotoha.KeywordSearchContentIndexField, Kotoha</field>
-                </fields>
-              </documentOptions>
-            </configuration>
-          </index>
-        </indexes>
-      </configuration>
+      <indexConfigurations>
+        <defaultSolrIndexConfiguration>
+          <fields hint="raw:AddComputedIndexField">
+            <!-- You can use your own field name. Set the search target's ID to the 'searchTargetId' attribute instead. -->
+            <field fieldName="ks_blog" returnType="text" searchTargetId="blog">Kotoha.KeywordSearchContentIndexField, Kotoha</field>
+          </fields>
+        </defaultSolrIndexConfiguration>
+      </indexConfigurations>
     </contentSearch>
   </sitecore>
 </configuration>
@@ -79,9 +75,10 @@ public SearchResults<SearchResultItem> SearchBlogByKeywords(string[] keywords)
     var index = ContentSearchManager.GetIndex("sitecore_master_index");
     using (var context = index.CreateSearchContext())
     {
-        // Create a query by search target ID and keywords
-        var query = context.CreateKeywordSearchQuery<SearchResultItem>("blog", keywords);
+        // Create a query for keyword search.
+        var query = context.CreateKeywordSearchQuery<SearchResultItem>(searchTargetId: "blog", keywords: keywords);
 
+        // You should add more filters and pagination queries.
         query = query.Filter(item => item.TemplateName == "Blog Page");
 
         return query.OrderByDescending(item => item["score"]).GetResults();
