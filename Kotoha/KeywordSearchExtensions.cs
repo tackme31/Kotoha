@@ -40,10 +40,9 @@ namespace Kotoha
 
             var boostPred = searchTarget.Fields
                 .Where(field => field.Boost > 0.0f)
-                .Append(new KeywordSearchTarget.TargetField(contentField.FieldName, 0))
                 .SelectMany(_ => keywords, (field, keyword) => (field, keyword))
                 .Aggregate(
-                    PredicateBuilder.False<T>(),
+                    PredicateBuilder.Create<T>(item => item.Name.MatchWildcard("*").Boost(0)),
                     (acc, pair) => acc.Or(item => item[pair.field.Name].Contains(pair.keyword).Boost(pair.field.Boost)));
 
             return context.GetQueryable<T>().Filter(matchPred).Where(boostPred);
