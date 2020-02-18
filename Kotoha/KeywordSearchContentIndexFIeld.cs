@@ -20,7 +20,7 @@ namespace Kotoha
             SearchTargetId = XmlUtil.GetAttribute("searchTargetId", configNode);
         }
 
-        public object ComputeFieldValue(IIndexable indexable)
+        public virtual object ComputeFieldValue(IIndexable indexable)
         {
             if (!(indexable is SitecoreIndexableItem indexableItem))
             {
