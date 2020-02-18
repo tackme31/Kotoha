@@ -18,6 +18,17 @@ namespace Kotoha
             Assert.ArgumentNotNullOrEmpty(searchTargetId, nameof(searchTargetId));
             Assert.ArgumentNotNull(keywords, nameof(keywords));
 
+            var query = context.GetQueryable<T>();
+            return context.AddKeywordSearchQuery(query, searchTargetId, keywords);
+        }
+
+        public static IQueryable<T> AddKeywordSearchQuery<T>(this IProviderSearchContext context, IQueryable<T> query, string searchTargetId, ICollection<string> keywords) where T : SearchResultItem
+        {
+            Assert.ArgumentNotNull(query, nameof(query));
+            Assert.ArgumentNotNull(context, nameof(context));
+            Assert.ArgumentNotNullOrEmpty(searchTargetId, nameof(searchTargetId));
+            Assert.ArgumentNotNull(keywords, nameof(keywords));
+
             var config = Factory.CreateObject("kotoha/configuration", true) as KeywordSearchConfiguration;
             var searchTarget = config.GetSearchTargetById(searchTargetId);
             if (searchTarget == null)
@@ -45,7 +56,7 @@ namespace Kotoha
                     PredicateBuilder.Create<T>(item => item.Name.MatchWildcard("*").Boost(0)),
                     (acc, pair) => acc.Or(item => item[pair.field.Name].Contains(pair.keyword).Boost(pair.field.Boost)));
 
-            return context.GetQueryable<T>().Filter(matchPred).Where(boostPred);
+            return query.Filter(matchPred).Where(boostPred);
         }
     }
 }
