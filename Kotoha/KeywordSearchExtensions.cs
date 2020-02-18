@@ -29,6 +29,11 @@ namespace Kotoha
             Assert.ArgumentNotNullOrEmpty(searchTargetId, nameof(searchTargetId));
             Assert.ArgumentNotNull(keywords, nameof(keywords));
 
+            if (!keywords.Any())
+            {
+                return query;
+            }
+
             var config = Factory.CreateObject("kotoha/configuration", true) as KeywordSearchConfiguration;
             var searchTarget = config.GetSearchTargetById(searchTargetId);
             if (searchTarget == null)
