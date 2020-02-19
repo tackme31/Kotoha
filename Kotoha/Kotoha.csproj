@@ -67,6 +67,7 @@
   <ItemGroup>
     <Compile Include="KeywordSearchConfiguration.cs" />
     <Compile Include="KeywordSearchContentIndexField.cs" />
+    <Compile Include="KeywordSearchOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="KeywordSearchExtensions.cs" />
   </ItemGroup>
