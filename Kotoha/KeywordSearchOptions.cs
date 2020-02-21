@@ -6,6 +6,6 @@ namespace Kotoha
         public Condition Condition { get; set; }
     }
 
-    public enum SearchType { Or, And }
+    public enum SearchType { And, Or }
     public enum Condition { Contains, Equals }
 }

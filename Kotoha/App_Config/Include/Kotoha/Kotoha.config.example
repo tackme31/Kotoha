@@ -3,12 +3,14 @@
   <sitecore role:require="Standalone or ContentManagement or ContentDelivery" search:require="solr">
     <kotoha>
       <configuration type="Kotoha.KeywordSearchConfiguration, Kotoha">
+        <!-- A KeywordSearchOptions that is used when no options supplied. -->
+        <defaultKeywordSearchOptions type="Kotoha.KeywordSearchOptions, Kotoha">
+          <SearchType>And</SearchType>
+          <Condition>Contains</Condition>
+        </defaultKeywordSearchOptions>
         <searchTargets hint="list:AddSearchTarget">
           <searchTarget id="blog" type="Kotoha.KeywordSearchTarget, Kotoha">
-            <!--
-                Identifier of this search target.
-                This must be unique across search targets.
-            -->
+            <!-- A identifier of this search target. This must be unique across search targets. -->
             <param desc="id">$(id)</param>
             <!--
                 Target fields and its boosting values of a keyword search.
@@ -33,7 +35,7 @@
         <defaultSolrIndexConfiguration>
           <documentOptions>
             <fields hint="raw:AddComputedIndexField">
-              <!-- You can use your own field name. Set the search target's ID to the 'searchTargetId' attribute instead. -->
+              <!-- A computed field for keyword search. Set the search target's ID to the 'searchTargetId' attribute. -->
               <field fieldName="ks_blog" returnType="text" searchTargetId="blog">Kotoha.KeywordSearchContentIndexField, Kotoha</field>
             </fields>
           </documentOptions>

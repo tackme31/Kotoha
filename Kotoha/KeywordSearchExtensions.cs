@@ -50,22 +50,26 @@ namespace Kotoha
                 throw new InvalidOperationException($"Keyword search content field was not found. (ID: {searchTargetId})");
             }
 
-            var generateMatchPred = CreatePredicateGenerator<T>(options?.Condition ?? default, options?.SearchType ?? default);
-            var matchPred = keywords
-                .Aggregate(
-                    PredicateBuilder.True<T>(),
-                    (acc, keyword) => generateMatchPred(acc, contentField.FieldName, keyword, 0));
+            var condition = options?.Condition ?? config.DefaultKeywordSearchOptions?.Condition ?? default;
+            var searchType = options?.SearchType ?? config.DefaultKeywordSearchOptions?.SearchType ?? default;
+            var generateFilterPred = CreatePredicateGenerator<T>(condition, searchType);
+            var generateBoostPred = CreatePredicateGenerator<T>(condition, SearchType.Or); // Boost predicate must use OR operator
 
-            // Boost predicate must use OR operator
-            var generateBoostPred = CreatePredicateGenerator<T>(options?.Condition ?? default, SearchType.Or);
+            // predicate for filtering
+            var filterPred = keywords
+                .Aggregate(
+                    PredicateBuilder.Create<T>(item => item.Name.MatchWildcard("*").Boost(0)), // always true
+                    (acc, keyword) => generateFilterPred(acc, contentField.FieldName, keyword, 0));
+
+            // predicate for boosting
             var boostPred = searchTarget.Fields
                 .Where(field => field.Boost > 0.0f)
                 .SelectMany(_ => keywords, (field, keyword) => (field, keyword))
                 .Aggregate(
-                    PredicateBuilder.Create<T>(item => item.Name.MatchWildcard("*").Boost(0)), // Make the predicate return always true
+                    PredicateBuilder.Create<T>(item => item.Name.MatchWildcard("*").Boost(0)), // always true
                     (acc, pair) => generateBoostPred(acc, pair.field.Name, pair.keyword, pair.field.Boost));
 
-            return query.Filter(matchPred).Where(boostPred);
+            return query.Filter(filterPred).Where(boostPred);
         }
 
         private static Func<Expression<Func<T, bool>>, string, string, float, Expression<Func<T, bool>>> CreatePredicateGenerator<T>(Condition condition, SearchType searchType) where T : SearchResultItem

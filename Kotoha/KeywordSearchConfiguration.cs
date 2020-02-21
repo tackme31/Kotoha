@@ -10,6 +10,7 @@ namespace Kotoha
     {
         private readonly IDictionary<string, KeywordSearchTarget> _searchTarget;
         public ICollection<KeywordSearchTarget> SearchTargets => _searchTarget.Values;
+        public KeywordSearchOptions DefaultKeywordSearchOptions { get; set; }
 
         public KeywordSearchConfiguration()
         {
