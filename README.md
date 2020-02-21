@@ -21,10 +21,7 @@ You can see a sample configuration in [Kotoha.config.example](./Kotoha/App_Confi
       <configuration type="Kotoha.KeywordSearchConfiguration, Kotoha">
         <searchTargets hint="list:AddSearchTarget">
           <searchTarget id="blog" type="Kotoha.KeywordSearchTarget, Kotoha">
-            <!--
-                Identifier of this search target.
-                This must be unique across search targets.
-            -->
+            <!-- A identifier of this search target. This must be unique across search targets. -->
             <param desc="id">$(id)</param>
             <!--
                 Target fields and its boosting values of a keyword search.
@@ -58,7 +55,7 @@ You can see a sample configuration in [Kotoha.config.example](./Kotoha/App_Confi
         <defaultSolrIndexConfiguration>
           <documentOptions>
             <fields hint="raw:AddComputedIndexField">
-              <!-- You can use your own field name. Set the search target's ID to the 'searchTargetId' attribute instead. -->
+              <!-- A computed field for keyword search. Set the search target's ID to the 'searchTargetId' attribute. -->
               <field fieldName="ks_blog" returnType="text" searchTargetId="blog">Kotoha.KeywordSearchContentIndexField, Kotoha</field>
             </fields>
           </documentOptions>
@@ -94,8 +91,8 @@ public SearchResults<SearchResultItem> SearchBlogByKeywords(string[] keywords)
 
 6. Check your search code works well.
 
-### Search Options
-*Kotoha* supports AND/OR search and Contains/Equals condition (default: AND + Contains). You can change this behavior with `KeywordSearchOptions`.
+### Keyword Search Options
+*Kotoha* supports AND/OR search and Contains/Equals condition. This behavior can be changed by supplying `KeywordSearchOptions`.
 
 ```cs
 // OR search + Equals condition
@@ -107,6 +104,26 @@ var options = new KeywordSearchOptions
 
 var query = context.CreateKeywordSearchQuery<SearchResultItem>("blog", keywords, options);
 ```
+
+The default behavior can be set in the configuration.
+
+```xml
+<configuration xmlns:role="http://www.sitecore.net/xmlconfig/role/" xmlns:search="http://www.sitecore.net/xmlconfig/search/">
+  <sitecore role:require="Standalone or ContentManagement or ContentDelivery" search:require="solr">
+    <kotoha>
+      <configuration type="Kotoha.KeywordSearchConfiguration, Kotoha">
+        <!-- A KeywordSearchOptions that is used when no options supplied. -->
+        <defaultKeywordSearchOptions type="Kotoha.KeywordSearchOptions, Kotoha">
+          <SearchType>And</SearchType>
+          <Condition>Contains</Condition>
+        </defaultKeywordSearchOptions>
+      </configuration>
+    </kotoha>
+  </sitecore>
+</configuration>
+```
+
+If the no default options configured, *Kotoha* uses AND search and Contains condition.
 
 ## See also
 - [Search result boosting](https://doc.sitecore.com/developers/93/platform-administration-and-architecture/en/search-result-boosting.html)
