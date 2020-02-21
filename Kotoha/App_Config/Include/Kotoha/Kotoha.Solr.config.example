@@ -13,8 +13,8 @@
             <!-- A identifier of this search target. This must be unique across search targets. -->
             <param desc="id">$(id)</param>
             <!--
-                Target fields and its boosting values of a keyword search.
-                If you want to use a field without boosting, remove the boost attribute or specify 0 to that's value.
+              Target fields and its boosting values of a keyword search.
+              If you want to use a field without boosting, remove the boost attribute or specify 0 to that's value.
             -->
             <fields hint="raw:AddField">
               <field name="Title"             boost="5" />
@@ -32,7 +32,7 @@
     </kotoha>
     <contentSearch>
       <indexConfigurations>
-        <defaultSolrIndexConfiguration>
+        <defaultSolrIndexConfiguration search:require="solr">
           <documentOptions>
             <fields hint="raw:AddComputedIndexField">
               <!-- A computed field for keyword search. Set the search target's ID to the 'searchTargetId' attribute. -->

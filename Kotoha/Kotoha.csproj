@@ -72,7 +72,8 @@
     <Compile Include="KeywordSearchExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Config\Include\Kotoha\Kotoha.config.example" />
+    <Content Include="App_Config\Include\Kotoha\Kotoha.Solr.config.example" />
+    <Content Include="App_Config\Include\Kotoha\Kotoha.Cloud.config.example" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />

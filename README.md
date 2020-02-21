@@ -3,20 +3,21 @@
 
 **This software is in early stage of development.**
 
-## Prerequisites
-- Sitecore XM/XP 9.3 with Solr
+## Supports
+- Sitecore: XM/XP 9.3
+- Search Provider: Solr/Azure Search
 
 ## Installation
 *Kotoha* is not available in NuGet Gallery yet. Download `.nupkg` file from [here](https://github.com/xirtardauq/Kotoha/releases) and install it locally.  
 
 ## Usage
-You can see a sample configuration in [Kotoha.config.example](./Kotoha/App_Config/Include/Kotoha/Kotoha.config.example).
+You can see a sample configuration in [Kotoha.Solr.config.example](./Kotoha/App_Config/Include/Kotoha/Kotoha.Solr.config.example) and [Kotoha.Cloud.config.example](./Kotoha/App_Config/Include/Kotoha/Kotoha.Cloud.config.example).
 
 1. Add a configuration for a keyword search target.
 
 ```xml
 <configuration xmlns:search="http://www.sitecore.net/xmlconfig/search/">
-  <sitecore search:require="solr">
+  <sitecore>
     <kotoha>
       <configuration type="Kotoha.KeywordSearchConfiguration, Kotoha">
         <searchTargets hint="list:AddSearchTarget">
@@ -24,8 +25,8 @@ You can see a sample configuration in [Kotoha.config.example](./Kotoha/App_Confi
             <!-- A identifier of this search target. This must be unique across search targets. -->
             <param desc="id">$(id)</param>
             <!--
-                Target fields and its boosting values of a keyword search.
-                If you want to use a field without boosting, remove the boost attribute or specify 0 to that's value.
+              Target fields and its boosting values of a keyword search.
+              If you want to use a field without boosting, remove the boost attribute or specify 0 to that's value.
             -->
             <fields hint="raw:AddField">
               <field name="Title"             boost="5" />
@@ -49,10 +50,11 @@ You can see a sample configuration in [Kotoha.config.example](./Kotoha/App_Confi
 
 ```xml
 <configuration xmlns:search="http://www.sitecore.net/xmlconfig/search/">
-  <sitecore search:require="solr">
+  <sitecore>
     <contentSearch>
       <indexConfigurations>
-        <defaultSolrIndexConfiguration>
+        <!-- Solr -->
+        <defaultSolrIndexConfiguration search:require="solr">
           <documentOptions>
             <fields hint="raw:AddComputedIndexField">
               <!-- A computed field for keyword search. Set the search target's ID to the 'searchTargetId' attribute. -->
@@ -60,6 +62,28 @@ You can see a sample configuration in [Kotoha.config.example](./Kotoha/App_Confi
             </fields>
           </documentOptions>
         </defaultSolrIndexConfiguration>
+
+        <!-- Azure -->
+        <defaultCloudIndexConfiguration  search:require="azure">
+          <documentOptions type="Sitecore.ContentSearch.DocumentBuilderOptions, Sitecore.ContentSearch">
+            <fields hint="raw:AddComputedIndexField">
+              <!-- A computed field for keyword search. Set the search target's ID to the 'searchTargetId' attribute. -->
+              <field fieldName="ks_blog" searchTargetId="blog" type="Kotoha.KeywordSearchContentIndexField, Kotoha"  />
+            </fields>
+            <!-- 
+              NOTE: When you use Azure Search and indexAllFields is setting to false,
+                    the boosted fields have to be added to index.
+            -->
+            <include hint="list:AddIncludedField">
+              <__Bucketable>{C9283D9E-7C29-4419-9C28-5A5C8FF53E84}</__Bucketable>
+              <Title>{81E9FCD9-9806-40A5-90CA-3365DE80D3FF}</Title>
+              <Tags>{34D69283-63AC-4E38-B39B-88FB7C521955}</Tags>
+              <Body>{C6C8B721-6C6C-49D3-87EC-C16C43C61826}</Body>
+              <Category>{E7956EAD-CCBB-49B9-A982-A835A7FD44E3}</Category>
+              <Author>{81826AE3-B77C-4685-B5AF-6A791C1F9BD2}</Author>
+            </include>
+          </documentOptions>
+        </defaultCloudIndexConfiguration>
       </indexConfigurations>
     </contentSearch>
   </sitecore>
@@ -92,7 +116,7 @@ public SearchResults<SearchResultItem> SearchBlogByKeywords(string[] keywords)
 6. Check your search code works well.
 
 ### Keyword Search Options
-*Kotoha* supports AND/OR search and Contains/Equals condition. This behavior can be changed by supplying `KeywordSearchOptions`.
+*Kotoha* supports AND/OR search and Contains/Equals conditions. This behavior can be changed by supplying `KeywordSearchOptions`.
 
 ```cs
 // OR search + Equals condition
