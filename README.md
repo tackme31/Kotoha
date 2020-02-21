@@ -75,7 +75,6 @@ You can see a sample configuration in [Kotoha.Solr.config.example](./Kotoha/App_
                     the boosted fields have to be added to index.
             -->
             <include hint="list:AddIncludedField">
-              <__Bucketable>{C9283D9E-7C29-4419-9C28-5A5C8FF53E84}</__Bucketable>
               <Title>{81E9FCD9-9806-40A5-90CA-3365DE80D3FF}</Title>
               <Tags>{34D69283-63AC-4E38-B39B-88FB7C521955}</Tags>
               <Body>{C6C8B721-6C6C-49D3-87EC-C16C43C61826}</Body>
@@ -109,9 +108,7 @@ public SearchResults<SearchResultItem> SearchBlogByKeywords(string[] keywords)
 }
 ```
 
-4. Build and deploy your project.
-
-5. In Sitecore, populate solr managed schema and rebuild all indexes.
+4. Deploy your project and rebuild (+populate) all indexes.
 
 6. Check your search code works well.
 
@@ -133,7 +130,7 @@ The default behavior can be set in the configuration.
 
 ```xml
 <configuration xmlns:role="http://www.sitecore.net/xmlconfig/role/" xmlns:search="http://www.sitecore.net/xmlconfig/search/">
-  <sitecore role:require="Standalone or ContentManagement or ContentDelivery" search:require="solr">
+  <sitecore role:require="Standalone or ContentManagement or ContentDelivery">
     <kotoha>
       <configuration type="Kotoha.KeywordSearchConfiguration, Kotoha">
         <!-- A KeywordSearchOptions that is used when no options supplied. -->
