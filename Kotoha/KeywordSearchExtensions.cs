@@ -58,7 +58,7 @@ namespace Kotoha
             // predicate for filtering
             var filterPred = keywords
                 .Aggregate(
-                    PredicateBuilder.Create<T>(item => item.Name.MatchWildcard("*").Boost(0)), // always true
+                    PredicateBuilder.True<T>(),
                     (acc, keyword) => generateFilterPred(acc, contentField.FieldName, keyword, 0));
 
             // predicate for boosting
