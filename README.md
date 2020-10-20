@@ -154,4 +154,4 @@ If the no default options configured, *Kotoha* uses AND search and Contains cond
 - Takumi Yamada (xirtardauq@gmail.com)
 
 ## License
-*Kotoha* is licensed unther the MIT license. See LICENSE.txt.
+*Kotoha* is licensed under the MIT license. See LICENSE.txt.
