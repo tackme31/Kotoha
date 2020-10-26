@@ -29,14 +29,9 @@ You can see a sample configuration in [Kotoha.Solr.config.example](./Kotoha/App_
               If you want to use a field without boosting, remove the boost attribute or specify 0 to that's value.
             -->
             <fields hint="raw:AddField">
-              <field name="Title"             boost="5" />
-              <field name="Tags"              boost="4" />
-              <field name="Body"              boost="4" />
-              <field name="Category"          boost="2" />
-              <field name="Author"            boost="2" />
-              <field name="Html Title"                  />
-              <field name="Meta Description"            />
-              <field name="Meta Keywords"               />
+              <field name="Title"             boost="4" />
+              <field name="Tags"              boost="3" />
+              <field name="Body"              boost="1" />
             </fields>
           </searchTarget>
         </searchTargets>
@@ -78,8 +73,6 @@ You can see a sample configuration in [Kotoha.Solr.config.example](./Kotoha/App_
               <Title>{81E9FCD9-9806-40A5-90CA-3365DE80D3FF}</Title>
               <Tags>{34D69283-63AC-4E38-B39B-88FB7C521955}</Tags>
               <Body>{C6C8B721-6C6C-49D3-87EC-C16C43C61826}</Body>
-              <Category>{E7956EAD-CCBB-49B9-A982-A835A7FD44E3}</Category>
-              <Author>{81826AE3-B77C-4685-B5AF-6A791C1F9BD2}</Author>
             </include>
           </documentOptions>
         </defaultCloudIndexConfiguration>
