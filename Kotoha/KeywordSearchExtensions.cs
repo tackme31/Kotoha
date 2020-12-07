@@ -20,10 +20,10 @@ namespace Kotoha
             Assert.ArgumentNotNull(keywords, nameof(keywords));
 
             var query = context.GetQueryable<T>();
-            return context.AddKeywordSearchQuery(query, searchTargetId, keywords, options);
+            return query.AddKeywordSearchQuery(searchTargetId, keywords, context, options);
         }
 
-        public static IQueryable<T> AddKeywordSearchQuery<T>(this IProviderSearchContext context, IQueryable<T> query, string searchTargetId, ICollection<string> keywords, KeywordSearchOptions options = null) where T : SearchResultItem
+        public static IQueryable<T> AddKeywordSearchQuery<T>(this IQueryable<T> query, string searchTargetId, ICollection<string> keywords, IProviderSearchContext context, KeywordSearchOptions options = null) where T : SearchResultItem
         {
             Assert.ArgumentNotNull(query, nameof(query));
             Assert.ArgumentNotNull(context, nameof(context));
@@ -52,41 +52,67 @@ namespace Kotoha
 
             var condition = options?.Condition ?? config.DefaultKeywordSearchOptions?.Condition ?? default;
             var searchType = options?.SearchType ?? config.DefaultKeywordSearchOptions?.SearchType ?? default;
-            var generateFilterPred = CreatePredicateGenerator<T>(condition, searchType);
-            var generateBoostPred = CreatePredicateGenerator<T>(condition, SearchType.Or); // Boost predicate must use OR operator
+            var filterPred = keywords.Aggregate(
+                PredicateBuilder.True<T>(),
+                (acc, keyword) =>
+                {
+                    switch (condition)
+                    {
+                        case Condition.Contains when searchType == SearchType.And:
+                            return acc.And(item => item[contentField.FieldName].Contains(keyword));
+                        case Condition.Contains when searchType == SearchType.Or:
+                            return acc.Or(item => item[contentField.FieldName].Contains(keyword));
+                        case Condition.Equals when searchType == SearchType.And:
+                            return acc.And(item => item[contentField.FieldName].Equals(keyword));
+                        case Condition.Equals when searchType == SearchType.Or:
+                            return acc.Or(item => item[contentField.FieldName].Equals(keyword));
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                });
 
-            // predicate for filtering
-            var filterPred = keywords
-                .Aggregate(
-                    PredicateBuilder.True<T>(),
-                    (acc, keyword) => generateFilterPred(acc, contentField.FieldName, keyword, 0));
+            return query.Filter(filterPred).AddKeywordBoostQuery(searchTargetId, keywords, context, options);
+        }
 
-            // predicate for boosting
+        public static IQueryable<T> AddKeywordBoostQuery<T>(this IQueryable<T> query, string searchTargetId, ICollection<string> keywords, IProviderSearchContext context, KeywordSearchOptions options = null) where T : SearchResultItem
+        {
+            Assert.ArgumentNotNull(query, nameof(query));
+            Assert.ArgumentNotNull(context, nameof(context));
+            Assert.ArgumentNotNullOrEmpty(searchTargetId, nameof(searchTargetId));
+            Assert.ArgumentNotNull(keywords, nameof(keywords));
+
+            if (!keywords.Any())
+            {
+                return query;
+            }
+
+            var config = Factory.CreateObject("kotoha/configuration", true) as KeywordSearchConfiguration;
+            var searchTarget = config.GetSearchTargetById(searchTargetId);
+            if (searchTarget == null)
+            {
+                throw new InvalidOperationException($"Keyword search target was not found. (ID: {searchTargetId})");
+            }
+
+            var condition = options?.Condition ?? config.DefaultKeywordSearchOptions?.Condition ?? default;
             var boostPred = searchTarget.Fields
                 .Where(field => field.Boost > 0.0f)
                 .SelectMany(_ => keywords, (field, keyword) => (field, keyword))
                 .Aggregate(
                     PredicateBuilder.Create<T>(item => item.Name.MatchWildcard("*").Boost(0)), // always true
-                    (acc, pair) => generateBoostPred(acc, pair.field.Name, pair.keyword, pair.field.Boost));
+                    (acc, pair) =>
+                    {
+                        switch (condition)
+                        {
+                            case Condition.Contains:
+                                return acc.Or(item => item[pair.field.Name].Contains(pair.keyword).Boost(pair.field.Boost));
+                            case Condition.Equals:
+                                return acc.Or(item => item[pair.field.Name].Equals(pair.keyword).Boost(pair.field.Boost));
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
+                    });
 
-            return query.Filter(filterPred).Where(boostPred);
-        }
-
-        private static Func<Expression<Func<T, bool>>, string, string, float, Expression<Func<T, bool>>> CreatePredicateGenerator<T>(Condition condition, SearchType searchType) where T : SearchResultItem
-        {
-            switch (condition)
-            {
-                case Condition.Contains when searchType == SearchType.And:
-                    return (acc, fieldName, value, boost) => acc.And(item => item[fieldName].Contains(value).Boost(boost));
-                case Condition.Contains when searchType == SearchType.Or:
-                    return (acc, fieldName, value, boost) => acc.Or(item => item[fieldName].Contains(value).Boost(boost));
-                case Condition.Equals when searchType == SearchType.And:
-                    return (acc, fieldName, value, boost) => acc.And(item => item[fieldName].Equals(value).Boost(boost));
-                case Condition.Equals when searchType == SearchType.Or:
-                    return (acc, fieldName, value, boost) => acc.Or(item => item[fieldName].Equals(value).Boost(boost));
-                default:
-                    throw new NotSupportedException();
-            }
+            return query.Where(boostPred);
         }
     }
 }
